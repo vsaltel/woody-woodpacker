@@ -2,7 +2,7 @@
 
 int	check_elf(Elf64_Ehdr *elfs, char *elf, char *arg)
 {
-	if ((unsigned char)elf[0] == '\x7f' && ft_strncmp(elf + 1, "ELF", 3))
+	if ((unsigned char)elf[0] != '\x7f' || ft_strncmp(elf + 1, "ELF", 3))
 	{
 		ft_dprintf(2, "woody_woodpacker : %s: Not a elf file\n", arg);
 		return (1);

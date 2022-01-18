@@ -1,21 +1,10 @@
 #include "woody.h"
-#include "sys/syscall.h"
-
-void test(void)
-{
-	pid_t pid;
-
-	pid = syscall(SYS_gettid);
-	printf("pid = %d\n", pid);
-	syscall(SYS_fstat);
-}
 
 int	main(int argc, char **argv)
 {
 	int		ret;
 	t_woody	woody;
 
-	test();
 	init_woody(&woody);
 	if (argc == 1)
 		woody.filename = ft_strdup("a.out");

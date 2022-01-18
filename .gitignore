@@ -2,3 +2,4 @@ objs
 woody_woodpacker
 sample
 test.c
+send.sh

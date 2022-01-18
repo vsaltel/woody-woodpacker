@@ -5,6 +5,7 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #include "elf.h"
+#include "sys/syscall.h"
 
 #include <stdio.h>
 

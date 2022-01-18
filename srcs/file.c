@@ -2,7 +2,7 @@
 
 int	stat_file(t_woody *woody)
 {
-	if (fstat(woody->fd, &woody->stat) != 0)
+	if (syscall(SYS_fstat, woody->fd, &woody->stat) != 0)
 	{
 		ft_dprintf(2, "woody_woodpacker : fstat fail\n");
 		return (2);
