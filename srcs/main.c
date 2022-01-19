@@ -16,15 +16,14 @@ int	main(int argc, char **argv)
 	ret = stat_file(&woody);
 	if (ret)
 		return (free_ret(&woody, ret));
-	woody.elf = mmap(NULL, woody.stat.st_size, PROT_READ, MAP_PRIVATE, woody.fd, 0);
-	woody.elfs = (Elf64_Ehdr *)woody.elf;
-	if (woody.elf == MAP_FAILED)
+	woody.elf_hdr = mmap(NULL, woody.stat.st_size, PROT_READ, MAP_PRIVATE, woody.fd, 0);
+	if (woody.elf_hdr == MAP_FAILED)
 	{
 		ft_dprintf(2, "woody_woodpacker : mmap fail\n");
 		return (free_ret(&woody, 3));
 	}
 	ret = 4;
-	if (!check_elf(woody.elfs, woody.elf, woody.filename))	
+	if (!check_elf(woody.elf_hdr, woody.filename))	
 		ret = ft_woody(&woody);
 	return (free_ret(&woody, ret));
 }
