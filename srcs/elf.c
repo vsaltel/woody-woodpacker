@@ -1,6 +1,6 @@
 #include "woody.h"
 
-void	display_system(Elf64_Ehdr *elf_hdr)
+static void	display_system(Elf64_Ehdr *elf_hdr)
 {
 	if ((unsigned char)elf_hdr->e_ident[EI_OSABI] == ELFOSABI_SYSV
 			|| (unsigned char)elf_hdr->e_ident[EI_OSABI] == ELFOSABI_NONE)
@@ -29,26 +29,26 @@ void	display_elf_info(Elf64_Ehdr *elf_hdr)
 {
 	ft_dprintf(2, "Elf version %u\n", (unsigned char)elf_hdr->e_ident[EI_VERSION]);
 	display_system(elf_hdr);
-	ft_dprintf(2, "e_ident size : %u\n", (unsigned char)elf_hdr->e_ident[EI_NIDENT]);
+	ft_dprintf(2, "e_ident size : %u\n", EI_NIDENT);
+	ft_dprintf(2, "ELF size : %u\n", elf_hdr->e_ehsize);
 }
 
-int	check_elf(Elf64_Ehdr *elf_hdr, char *arg)
+int		check_elf(Elf64_Ehdr *elf_hdr, char *arg)
 {
-	if (ft_strncmp((const char *)elf_hdr->e_ident + EI_MAG0, "\x7f""ELF", 4))
+	if (ft_strncmp((const char *)elf_hdr->e_ident + EI_MAG0, "\x7f\x45\x4c\x46", 4))
 	{
-		ft_dprintf(2, "woody_woodpacker : %s: Not a elf file\n", arg);
+		ft_dprintf(2, "woody_woodpacker : %s : Not a elf file\n", arg);
 		return (1);
 	}
 	if ((unsigned char)elf_hdr->e_ident[EI_CLASS] > 7)
 	{
-		ft_dprintf(2, "woody_woodpacker : %s: The file was not recognized as a valid object file\n", arg);
+		ft_dprintf(2, "woody_woodpacker : %s : The file was not recognized as a valid object file\n", arg);
 		return (1);
 	}
 	if ((unsigned char)elf_hdr->e_ident[EI_CLASS] != ELFCLASS64)
 	{
-		ft_dprintf(2, "woody_woodpacker : %s: Not a 64 bits file\n", arg);
+		ft_dprintf(2, "woody_woodpacker : %s : Not a 64 bits file\n", arg);
 		return (1);
 	}
-	display_elf_info(elf_hdr);
 	return (0);
 }

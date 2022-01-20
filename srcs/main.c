@@ -16,7 +16,8 @@ int	main(int argc, char **argv)
 	ret = stat_file(&woody);
 	if (ret)
 		return (free_ret(&woody, ret));
-	woody.elf_hdr = mmap(NULL, woody.stat.st_size, PROT_READ, MAP_PRIVATE, woody.fd, 0);
+	woody.binary = mmap(NULL, woody.stat.st_size, PROT_READ, MAP_PRIVATE, woody.fd, 0);
+	woody.elf_hdr = (Elf64_Ehdr *)woody.binary;
 	if (woody.elf_hdr == MAP_FAILED)
 	{
 		ft_dprintf(2, "woody_woodpacker : mmap fail\n");

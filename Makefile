@@ -18,6 +18,7 @@ OBJDIR	=	objs
 FILES	=	main.c	\
 			elf.c	\
 			file.c	\
+			sections.c	\
 			woody.c
 
 SRCS	=	$(addprefix $(SRCDIR)/, $(FILES))

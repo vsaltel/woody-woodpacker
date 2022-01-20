@@ -19,6 +19,7 @@ void	init_woody(t_woody *woody)
 
 int	ft_woody(t_woody *woody)
 {
-	(void)woody;
+	display_elf_info(woody->elf_hdr);
+	get_section(woody->elf_hdr, woody->binary);
 	return (0);
 }
