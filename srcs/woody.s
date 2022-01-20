@@ -1,18 +1,23 @@
 section .text
+	global _start 
 
-global main 
+_start:
+	mov rax, 0x1
+	mov rdi, 0x1
+	push 0x444f4f57
+	push 0x2e2e2e2e
+	mov rsi, rsp
+	mov rdx, 0xe
+	syscall
 
-main:
-	mov rax, 1		;	write(
-	mov rdi, 1		;		STDOUT_FILENO, 
-	mov rsi, msg	;		"....WOODY....\n",
-	mov rsi, msglen	;		14,
-	syscall			;	);
+	mov rax, 0x1
+	mov rdi, 0x1
+	push 0x0000002e
+	push 0x2e2e2e59
+	mov rsi, rsp
+	mov rdx, 0xe
+	syscall
 
-	mov rax, 60		;	exit(
-	mov rdi, 0		;		EXIT_SUCCESS
-	syscall			;	);
-
-section .rodata
-	msg:	db "....WOODY....", 14
-	msglen:	equ $ - msg
+	mov rax, 0x3c
+	mov rdi, 0x0
+	syscall
