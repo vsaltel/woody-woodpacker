@@ -19,17 +19,16 @@ Elf64_Shdr	*get_section_by_name(Elf64_Ehdr *elf_hdr, char *binary, char *name)
 	return (&section[i]);
 }
 
-char	*get_data_section(Elf64_Shdr *sh, char *binary)
+t_section	*get_data_section(t_section *dest, Elf64_Shdr *sh, char *binary)
 {
-	char	*ret;
-
-	if (!sh || !(ret = malloc((char) * sh->sh_size)))
+	if (!sh || !dest)
 		return (NULL);
-	ft_memcpy(ret, binary + sh->sh_offset, sh->sh_size);
-	return (ret);
+	dest->data = binary + sh->sh_offset;
+	dest->len = sh->sh_size;
+	return (dest);
 }
 
-int get_section(Elf64_Ehdr *elf_hdr, char *binary)
+int			set_section(Elf64_Ehdr *elf_hdr, char *binary)
 {
 	Elf64_Shdr	*sh;
 

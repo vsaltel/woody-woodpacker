@@ -24,3 +24,17 @@ int	open_file(char *arg)
 		ft_dprintf(2, "woody_woodpacker : %s: No such file or directory\n", arg);
 	return (fd);
 }
+
+int write_file(int fd, char *content)
+{
+	if (fd > -1 && content)
+		return (write(fd, content, ft_strlen(content)));
+	return (-1);
+}
+
+int	create_file(char *name)
+{
+	if (name)
+		return (open(name, O_TRUNC | O_WRONLY | O_CREAT, 751));
+	return (-1);
+}

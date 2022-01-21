@@ -15,10 +15,12 @@ SRCDIR	=	srcs
 INCDIR	=	includes
 OBJDIR	=	objs
 
-FILES	=	main.c	\
-			elf.c	\
-			file.c	\
-			sections.c	\
+FILES	=	main.c		\
+			elf.c		\
+			file.c		\
+			section.c	\
+			segment.c	\
+			utils.c		\
 			woody.c
 
 SRCS	=	$(addprefix $(SRCDIR)/, $(FILES))

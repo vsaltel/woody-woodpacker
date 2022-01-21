@@ -50,5 +50,10 @@ int		check_elf(Elf64_Ehdr *elf_hdr, char *arg)
 		ft_dprintf(2, "woody_woodpacker : %s : Not a 64 bits file\n", arg);
 		return (1);
 	}
+	if (elf_hdr->e_type != ET_DYN && elf_hdr->e_type != ET_EXEC)
+	{
+		ft_dprintf(2, "woody_woodpacker : %s : Not an executable file\n", arg);
+		return (1);
+	}
 	return (0);
 }
