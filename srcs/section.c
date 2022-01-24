@@ -10,6 +10,7 @@ Elf64_Shdr	*get_section_by_name(Elf64_Ehdr *elf_hdr, char *binary, char *name)
 		return (NULL);
 	section = (Elf64_Shdr *)(binary + elf_hdr->e_shoff);
 	strtab = &(section[elf_hdr->e_shstrndx]);
+	printf("%ld %ld lala\n", elf_hdr->e_shoff, elf_hdr->e_shstrndx);
 	i = -1;
 	while (++i < elf_hdr->e_shnum)
 		if (!strcmp(binary + strtab->sh_offset + section[i].sh_name, name))
@@ -26,6 +27,29 @@ t_section	*get_data_section(t_section *dest, Elf64_Shdr *sh, char *binary)
 	dest->data = binary + sh->sh_offset;
 	dest->len = sh->sh_size;
 	return (dest);
+}
+
+void		update_section_pos(t_woody *woody, t_segments *lseg, size_t offset)
+{
+	Elf64_Shdr			*section;
+	long unsigned int	i;
+
+	i = -1;
+	section = (Elf64_Shdr *)(woody->bindest + woody->elf_hdr->e_shoff);
+	while (++i < woody->elf_hdr->e_shnum)
+		if (section[i].sh_offset >= lseg->hdata->p_offset
+			&& section[i].sh_offset + section[i].sh_size == lseg->hdata->p_offset + lseg->hdata->p_filesz)
+
+			break ;
+	if (i >= woody->elf_hdr->e_shnum)
+		return ;
+	section[i].sh_size += offset;
+	while (++i < woody->elf_hdr->e_shnum)
+	{
+		section[i].sh_offset += offset;
+		if (section[i].sh_offset != 0)
+			section[i].sh_offset += offset;
+	}
 }
 
 int			set_section(Elf64_Ehdr *elf_hdr, char *binary)

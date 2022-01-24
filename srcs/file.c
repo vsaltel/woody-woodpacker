@@ -12,6 +12,7 @@ int	stat_file(t_woody *woody)
 		ft_dprintf(2, "woody_woodpacker : %s: is Directory\n", woody->filename);
 		return (2);
 	}
+	woody->len = woody->stat.st_size;
 	return (0);
 }
 
@@ -25,16 +26,16 @@ int	open_file(char *arg)
 	return (fd);
 }
 
-int write_file(int fd, char *content)
+int write_file(int fd, char *content, size_t len)
 {
 	if (fd > -1 && content)
-		return (write(fd, content, ft_strlen(content)));
+		return (write(fd, content, len));
 	return (-1);
 }
 
 int	create_file(char *name)
 {
 	if (name)
-		return (open(name, O_TRUNC | O_WRONLY | O_CREAT, 751));
+		return (open(name, O_TRUNC | O_WRONLY | O_CREAT, 0751));
 	return (-1);
 }

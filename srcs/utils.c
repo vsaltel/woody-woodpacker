@@ -3,7 +3,7 @@
 int	free_ret(t_woody *woody, int ret)
 {
 	free(woody->filename);
-	if (woody->elf_hdr)
+	if (woody->binary)
 		munmap(woody->binary, woody->stat.st_size);
 	if (woody->fd > 0)
 		close(woody->fd);
@@ -18,4 +18,17 @@ void	init_woody(t_woody *woody)
 	woody->elf_hdr = NULL;
 	woody->fd = -1;
 	woody->fd_dest = -1;
+}
+
+size_t	memlen(char *deb, char *dest)
+{
+	size_t i;
+
+	i = 0;
+	while (deb != dest)
+	{
+		i++;
+		deb++;
+	}
+	return (i);
 }
