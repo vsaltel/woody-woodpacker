@@ -10,7 +10,6 @@ Elf64_Shdr	*get_section_by_name(Elf64_Ehdr *elf_hdr, char *binary, char *name)
 		return (NULL);
 	section = (Elf64_Shdr *)(binary + elf_hdr->e_shoff);
 	strtab = &(section[elf_hdr->e_shstrndx]);
-	printf("%ld %ld lala\n", elf_hdr->e_shoff, elf_hdr->e_shstrndx);
 	i = -1;
 	while (++i < elf_hdr->e_shnum)
 		if (!strcmp(binary + strtab->sh_offset + section[i].sh_name, name))

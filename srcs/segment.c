@@ -2,15 +2,20 @@
 
 int			get_index_hdata(Elf64_Ehdr *elf_hdr, char *binary)
 {
+	/*
 	Elf64_Phdr	*segment;
 	int			i;
+	*/
 
+	return (elf_hdr->e_phnum - 1);
+	/*
 	i = -1;
 	segment = (Elf64_Phdr *)(binary + elf_hdr->e_phoff);
 	while (++i < elf_hdr->e_phnum)
 		if ((segment[i].p_flags & PF_R) && (segment[i].p_flags & PF_X))
 				return (i);
 	return (-1);
+	*/
 }
 
 int			init_segments(t_segments *seg, Elf64_Ehdr *elf_hdr, char *binary)
@@ -22,22 +27,7 @@ int			init_segments(t_segments *seg, Elf64_Ehdr *elf_hdr, char *binary)
 	return (0);
 }
 
-int			add_to_end_segment(t_woody *woody, Elf64_Phdr *phdr, char *content, size_t seglen, size_t content_len)
-{
-	char	*tmp;
-	int		i;
 
-	tmp = malloc(woody->len + content_len);
-	ft_memcpy(tmp, woody->bindest, phdr->p_offset + seglen);
-	i = phdr->p_offset + seglen;
-	ft_memcpy(tmp + i, content, content_len);
-	i += content_len;
-	ft_memcpy(tmp + i, woody->bindest + phdr->p_offset + seglen, woody->len - (phdr->p_offset + seglen));
-	free(woody->bindest);
-	woody->bindest = tmp;
-	woody->len += content_len;
-	return (0);
-}
 
 void		edit_segment_size_loop(t_woody *woody, t_segments *lseg, size_t len)
 {
@@ -51,6 +41,7 @@ void		edit_segment_size_loop(t_woody *woody, t_segments *lseg, size_t len)
 
 	segment->p_memsz += len; 
 	segment->p_filesz += len; 
+	/*
 	i = lseg->hdata_index;
 	while (++i < lseg->len)
 	{
@@ -61,4 +52,24 @@ void		edit_segment_size_loop(t_woody *woody, t_segments *lseg, size_t len)
 		segment->p_offset += len;
 		segment->p_align += len;
 	}
+	*/
+}
+
+int			add_to_end_segment(t_woody *woody, t_segments *lseg, char *content, size_t content_len)
+{
+	char	*tmp;
+	int		i;
+
+	tmp = malloc(woody->len + content_len);
+	ft_memcpy(tmp, woody->bindest, lseg->hdata->p_offset + lseg->tmp_filesz);
+	i = lseg->hdata->p_offset + lseg->tmp_filesz;
+	ft_memcpy(tmp + i, content, content_len);
+	woody->elf_hdr->e_shoff = lseg->hdata->p_vaddr + lseg->tmp_filesz;	//entry point
+	ft_printf("entrypoint %d\n", lseg->hdata->p_vaddr + lseg->tmp_filesz);
+	i += content_len;
+	ft_memcpy(tmp + i, woody->bindest + lseg->hdata->p_offset + lseg->tmp_filesz, woody->len - (lseg->hdata->p_offset + lseg->tmp_filesz));
+	free(woody->bindest);
+	woody->bindest = tmp;
+	woody->len += content_len;
+	return (0);
 }
