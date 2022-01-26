@@ -56,6 +56,7 @@ t_section	*get_data_section(t_section *dest, Elf64_Shdr *sh, char *binary);
 int			set_section(Elf64_Ehdr *elf_hdr, char *binary);
 void		update_section_pos(t_woody *woody, t_segments *lseg, size_t offset);
 
+void		display_segment_info(Elf64_Ehdr *elf_hdr, char *binary);
 int			get_index_hdata(Elf64_Ehdr *elf_hdr, char *binary);
 int			init_segments(t_segments *seg, Elf64_Ehdr *elf_hdr, char *binary);
 int			add_to_end_segment(t_woody *woody, t_segments *lseg, char *content, size_t content_len);
