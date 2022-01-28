@@ -26,8 +26,6 @@ typedef struct s_segments
 	Elf64_Phdr	*begin;
 	Elf64_Phdr	*hdata;
 	int			hdata_index;
-	size_t		tmp_filesz;
-	size_t		tmp_memsz;
 	size_t		len;
 }				t_segments;
 
@@ -59,7 +57,7 @@ void		update_section_pos(t_woody *woody, t_segments *lseg, size_t offset);
 void		display_segment_info(Elf64_Ehdr *elf_hdr, char *binary);
 int			get_index_hdata(Elf64_Ehdr *elf_hdr, char *binary);
 int			init_segments(t_segments *seg, Elf64_Ehdr *elf_hdr, char *binary);
-int			add_to_end_segment(t_woody *woody, t_segments *lseg, char *content, size_t content_len);
+int			add_to_end_segment(t_woody *woody, t_segments *lseg, char *content, size_t *content_len);
 void		edit_segment_size_loop(t_woody *woody, t_segments *lseg, size_t len);
 
 #endif

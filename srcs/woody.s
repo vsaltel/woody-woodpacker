@@ -18,6 +18,5 @@ _start:
 	mov rdx, 0xe
 	syscall
 
-	mov rax, 0x3c
-	mov rdi, 0x0
-	syscall
+	mov rax, 0x1111111111111111
+	jmp rax
