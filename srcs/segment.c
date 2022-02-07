@@ -86,17 +86,18 @@ int			get_lastest_segment(Elf64_Ehdr *elf_hdr, Elf64_Phdr *tmp)
 
 void		edit_segment_size_loop(t_woody *woody, t_segments *lseg, size_t len)
 {
-	Elf64_Phdr	*tmp;
-	size_t		y;
+	//Elf64_Phdr	*tmp;
+	//size_t		y;
+	(void)woody;
 
 	ft_printf("p_memsz %ld, p_filesz %ld, p_align %ld\n", lseg->hdata->p_memsz, lseg->hdata->p_filesz, lseg->hdata->p_align);
 	ft_printf("p_vaddr %ld, p_offset %ld\n", lseg->hdata->p_vaddr, lseg->hdata->p_offset);
 	ft_printf("p_flags %c%c%c\n", (lseg->hdata->p_flags & PF_R ? 'R' : ' '), (lseg->hdata->p_flags & PF_W ? 'W' : ' '), (lseg->hdata->p_flags & PF_X ? 'X' : ' '));
 
+	/*
 	tmp = lseg->begin;
 	y = get_lastest_segment(woody->elf_hdr, tmp);
 	ft_printf("lastest : %ld, %ld, %ld\n", woody->elf_hdr->e_shoff, tmp[y].p_offset + tmp[y].p_filesz, tmp[y].p_offset);
-	/*
 	for (size_t i = tmp[y].p_offset + tmp[y].p_filesz; i < woody->elf_hdr->e_shoff; i++) {
         ft_printf(" %2x", woody->bindest[i]);
     }	
@@ -109,37 +110,26 @@ void		edit_segment_size_loop(t_woody *woody, t_segments *lseg, size_t len)
 	lseg->hdata->p_filesz += len; 
 }
 
-int			add_to_end_segment(t_woody *woody, t_segments *lseg, char *content, size_t *content_len)
+int			add_to_end_segment(t_woody *woody, t_segments *lseg, char *content, size_t content_len)
 {
-	char	*tmp;
-	Elf64_Addr	jmpaddr;
-	char jmpcode[] = "\xff\xe0";
-	size_t jmpcode_len = 2;
-	char	*payload;
+	int		i_jmp;
 	char	*code;
-	size_t	payload_len;
+	size_t	jmpaddr;
 
-	code = malloc(lseg->hdata->p_filesz);
-	ft_memcpy(code, woody->bindest + lseg->hdata->p_offset, lseg->hdata->p_filesz);
+	if ((i_jmp = jmpchr(content, content_len)) < 0)
+		return (1);
+	jmpaddr = woody->elf_hdr->e_entry - ((lseg->hdata->p_vaddr + lseg->hdata->p_filesz) + (i_jmp + 5));
+	ft_memcpy(content + i_jmp + 1, &jmpaddr, sizeof(jmpaddr));
+	//jmpaddr = reverse_bytes(jmpaddr);
 
-	payload_len = *content_len + sizeof(Elf64_Addr) + jmpcode_len;
-	payload = malloc(payload_len);
-	ft_memcpy(payload, content, *content_len);
-
-	jmpaddr = woody->elf_hdr->e_entry - ((lseg->hdata->p_offset + lseg->hdata->p_filesz) + payload_len);
-	ft_memcpy(payload + *content_len, &jmpaddr, sizeof(Elf64_Addr));
-	ft_memcpy(payload + *content_len + sizeof(Elf64_Addr), jmpcode, jmpcode_len);
-
-	tmp = malloc(woody->len);
-	ft_memcpy(tmp, woody->bindest, woody->len);
-	ft_memcpy(tmp + lseg->hdata->p_offset + lseg->hdata->p_filesz, payload, payload_len);
-	//ft_memcpy(tmp + lseg->hdata->p_offset + *content_len, woody->bindest + lseg->hdata->p_offset, woody->len - lseg->hdata->p_offset);
+	code = malloc(woody->len);
+	ft_memcpy(code, woody->bindest, woody->len);
+	ft_memcpy(code + lseg->hdata->p_offset + lseg->hdata->p_filesz, content, content_len);
 
 	free(woody->bindest);
-	woody->bindest = tmp;
+	woody->bindest = code;
 	woody->elf_hdr = (Elf64_Ehdr *)woody->bindest;
-	woody->len += payload_len;
-	*content_len += sizeof(woody->elf_hdr->e_entry);
-	woody->elf_hdr->e_entry = lseg->hdata->p_offset + lseg->hdata->p_filesz;	//entry point
+	woody->elf_hdr->e_entry = lseg->hdata->p_vaddr + lseg->hdata->p_filesz;	//entry point
+	ft_printf("entry : '%x'\n", woody->elf_hdr->e_entry);
 	return (0);
 }

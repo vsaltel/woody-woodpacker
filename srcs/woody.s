@@ -2,6 +2,15 @@ section .text
 	global _start 
 
 _start:
+	push rax 
+	push rbx 
+	push rcx 
+	push rdx 
+	push rsi 
+	push rdi 
+	push rsp 
+	push rbp
+
 	mov rax, 0x1
 	mov rdi, 0x1
 	push 0x444f4f57
@@ -18,5 +27,13 @@ _start:
 	mov rdx, 0xe
 	syscall
 
-	mov rax, 0x1111111111111111
-	jmp rax
+	jmp 0x11111111
+
+	pop rax 
+	pop rbx 
+	pop rcx 
+	pop rdx 
+	pop rsi 
+	pop rdi 
+	pop rsp 
+	pop rbp

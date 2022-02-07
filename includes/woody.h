@@ -45,6 +45,8 @@ int			free_ret(t_woody *woody, int ret);
 void		init_woody(t_woody *woody);
 size_t		memlen(char *deb, char *dest);
 int			ft_woody(t_woody *woody);
+int			jmpchr(char *str, size_t len);
+Elf64_Addr	reverse_bytes(Elf64_Addr bytes);
 
 int			check_elf(Elf64_Ehdr *elf_hdr, char *arg);
 void		display_elf_info(Elf64_Ehdr *elf_hdr);
@@ -57,7 +59,7 @@ void		update_section_pos(t_woody *woody, t_segments *lseg, size_t offset);
 void		display_segment_info(Elf64_Ehdr *elf_hdr, char *binary);
 int			get_index_hdata(Elf64_Ehdr *elf_hdr, char *binary);
 int			init_segments(t_segments *seg, Elf64_Ehdr *elf_hdr, char *binary);
-int			add_to_end_segment(t_woody *woody, t_segments *lseg, char *content, size_t *content_len);
+int			add_to_end_segment(t_woody *woody, t_segments *lseg, char *content, size_t content_len);
 void		edit_segment_size_loop(t_woody *woody, t_segments *lseg, size_t len);
 
 #endif
