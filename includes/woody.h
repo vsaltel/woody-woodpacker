@@ -18,6 +18,7 @@ typedef struct s_woody
 	char		*binary;
 	char		*bindest;
 	int			fd_dest;
+	uint64_t	key;
 	Elf64_Ehdr	*elf_hdr;
 }				t_woody;
 
@@ -26,7 +27,8 @@ typedef struct s_segments
 	Elf64_Phdr	*begin;
 	Elf64_Phdr	*hdata;
 	int			hdata_index;
-	size_t		len;
+	size_t		code_len;
+	size_t		seg_len;
 }				t_segments;
 
 typedef struct s_section
@@ -61,5 +63,9 @@ int			get_index_hdata(Elf64_Ehdr *elf_hdr, char *binary);
 int			init_segments(t_segments *seg, Elf64_Ehdr *elf_hdr, char *binary);
 int			add_to_end_segment(t_woody *woody, t_segments *lseg, char *content, size_t content_len);
 void		edit_segment_size_loop(t_woody *woody, t_segments *lseg, size_t len);
+
+
+void		encrypt(t_woody *woody, t_segments *seg);
+uint64_t	keygen(void);
 
 #endif

@@ -20,6 +20,7 @@ FILES	=	main.c		\
 			file.c		\
 			section.c	\
 			segment.c	\
+			encrypt.c	\
 			utils.c		\
 			woody.c
 

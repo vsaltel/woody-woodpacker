@@ -10,6 +10,14 @@ _start:
 	push rdi 
 	push rsp 
 	push rbp
+	push r8
+	push r9
+	push r10
+	push r11
+	push r12
+	push r13
+	push r14
+	push r15
 
 	mov rax, 0x1
 	mov rdi, 0x1
@@ -18,6 +26,8 @@ _start:
 	mov rsi, rsp
 	mov rdx, 0xe
 	syscall
+	pop rax
+	pop rax
 
 	mov rax, 0x1
 	mov rdi, 0x1
@@ -26,14 +36,24 @@ _start:
 	mov rsi, rsp
 	mov rdx, 0xe
 	syscall
+	pop rax
+	pop rax
+
+	pop r15
+	pop r14
+	pop r13
+	pop r12
+	pop r11
+	pop r10
+	pop r9
+	pop r8
+	pop rbp
+	pop rsp 
+	pop rdi 
+	pop rsi 
+	pop rdx 
+	pop rcx 
+	pop rbx 
+	pop rax 
 
 	jmp 0x11111111
-
-	pop rax 
-	pop rbx 
-	pop rcx 
-	pop rdx 
-	pop rsi 
-	pop rdi 
-	pop rsp 
-	pop rbp
