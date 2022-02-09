@@ -9,6 +9,10 @@
 
 # include "libft.h"
 
+extern void		inject_func(void);
+extern size_t	inject_size;
+extern size_t	code_size;
+
 typedef struct s_woody
 {
 	char		*filename;
@@ -27,7 +31,8 @@ typedef struct s_segments
 	Elf64_Phdr	*begin;
 	Elf64_Phdr	*hdata;
 	int			hdata_index;
-	size_t		code_len;
+	uint64_t	code_len;
+	uint64_t	code_deb;
 	size_t		seg_len;
 }				t_segments;
 
@@ -59,10 +64,11 @@ int			set_section(Elf64_Ehdr *elf_hdr, char *binary);
 void		update_section_pos(t_woody *woody, t_segments *lseg, size_t offset);
 
 void		display_segment_info(Elf64_Ehdr *elf_hdr, char *binary);
+int			check_data_available(t_woody *woody, t_segments *seg);
 int			get_index_hdata(Elf64_Ehdr *elf_hdr, char *binary);
 int			init_segments(t_segments *seg, Elf64_Ehdr *elf_hdr, char *binary);
-int			add_to_end_segment(t_woody *woody, t_segments *lseg, char *content, size_t content_len);
-void		edit_segment_size_loop(t_woody *woody, t_segments *lseg, size_t len);
+int			add_to_end_segment(t_woody *woody, t_segments *lseg);
+void		edit_segment_size_loop(t_woody *woody, t_segments *lseg);
 
 
 void		encrypt(t_woody *woody, t_segments *seg);

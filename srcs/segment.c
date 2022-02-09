@@ -10,9 +10,22 @@ void		display_segment_info(Elf64_Ehdr *elf_hdr, char *binary)
 	while (++i < elf_hdr->e_phnum)
 	{
 		ft_printf("%d\tp_memsz %ld, p_filesz %ld, p_align %ld\n", i, segment[i].p_memsz, segment[i].p_filesz, segment[i].p_align);
-		ft_printf("\tp_vaddr %ld, p_offset %ld\n", segment[i].p_vaddr, segment[i].p_offset);
+		ft_printf("\tp_vaddr %lx, p_offset %ld\n", segment[i].p_vaddr, segment[i].p_offset);
 		ft_printf("\tp_flags %c%c%c, p_type %d\n", (segment[i].p_flags & PF_R ? 'R' : ' '), (segment[i].p_flags & PF_W ? 'W' : ' '), (segment[i].p_flags & PF_X ? 'X' : ' '), segment[i].p_type);
 	}
+}
+
+int			check_data_available(t_woody *woody, t_segments *seg)
+{
+	size_t	i;
+	char	*data;
+
+	data = woody->bindest + seg->hdata->p_offset + seg->hdata->p_filesz;
+	i = 0;
+	while (data[i] == 0)
+		i++;
+	ft_printf("available : %d\n", i);
+	return (0);
 }
 
 int			get_index_hdata(Elf64_Ehdr *elf_hdr, char *binary)
@@ -26,35 +39,6 @@ int			get_index_hdata(Elf64_Ehdr *elf_hdr, char *binary)
 		if ((segment[i].p_flags & PF_R) && (segment[i].p_flags & PF_X))
 				return (i);
 	return (-1);
-	/*
-	Elf64_Phdr	*segment;
-	int			i;
-	int			y;
-
-	y = 0;
-	i = -1;
-	segment = (Elf64_Phdr *)(binary + elf_hdr->e_phoff);
-	while (++i < elf_hdr->e_phnum)
-		if ((segment[i].p_flags & PF_R) && (segment[i].p_flags & PF_W))
-		{
-				y = i;
-				break ;
-		}
-	if (y != 0)
-	{
-		while (++y < elf_hdr->e_phnum)
-		{
-			ft_printf("act = %d, searched = %d\n", segment[y].p_type, PT_NOTE);
-			if (segment[y].p_type == PT_NOTE)
-			{
-				ft_printf("here %d\n", y);
-				i = y;
-			}
-		}
-		return (i);
-	}
-	return (-1);
-	*/
 }
 
 int			init_segments(t_segments *seg, Elf64_Ehdr *elf_hdr, char *binary)
@@ -63,72 +47,51 @@ int			init_segments(t_segments *seg, Elf64_Ehdr *elf_hdr, char *binary)
 	seg->hdata_index = get_index_hdata(elf_hdr, binary);
 	seg->hdata = seg->begin + seg->hdata_index;
 	seg->code_len = seg->hdata->p_filesz;
+	//seg->code_deb = elf_hdr->e_entry;
+	seg->code_deb = seg->hdata->p_vaddr;
 	seg->seg_len = elf_hdr->e_phnum;
 	return (0);
 }
 
-int			get_lastest_segment(Elf64_Ehdr *elf_hdr, Elf64_Phdr *tmp)
+void		edit_segment_size_loop(t_woody *woody, t_segments *lseg)
 {
-	size_t		i;
-	size_t		y;
-	size_t		len_tmp;
-
-	i = -1;
-	y = 0;
-	len_tmp = 0;
-	while (++i < elf_hdr->e_phnum)
-		if ((tmp[i].p_offset + tmp[i].p_filesz) > len_tmp)
-		{
-			y = i;
-			len_tmp = (tmp[i].p_vaddr + tmp[i].p_filesz);
-		}
-	return (y);
-}
-
-void		edit_segment_size_loop(t_woody *woody, t_segments *lseg, size_t len)
-{
-	//Elf64_Phdr	*tmp;
-	//size_t		y;
 	(void)woody;
 
-	/*
-	ft_printf("p_memsz %ld, p_filesz %ld, p_align %ld\n", lseg->hdata->p_memsz, lseg->hdata->p_filesz, lseg->hdata->p_align);
-	ft_printf("p_vaddr %ld, p_offset %ld\n", lseg->hdata->p_vaddr, lseg->hdata->p_offset);
-	ft_printf("p_flags %c%c%c\n", (lseg->hdata->p_flags & PF_R ? 'R' : ' '), (lseg->hdata->p_flags & PF_W ? 'W' : ' '), (lseg->hdata->p_flags & PF_X ? 'X' : ' '));
-
-	tmp = lseg->begin;
-	y = get_lastest_segment(woody->elf_hdr, tmp);
-	ft_printf("lastest : %ld, %ld, %ld\n", woody->elf_hdr->e_shoff, tmp[y].p_offset + tmp[y].p_filesz, tmp[y].p_offset);
-	for (size_t i = tmp[y].p_offset + tmp[y].p_filesz; i < woody->elf_hdr->e_shoff; i++) {
-        ft_printf(" %2x", woody->bindest[i]);
-    }	
-
-	lseg->hdata->p_align = 1;
-	lseg->hdata->p_vaddr = tmp[y].p_vaddr + ((tmp[y].p_memsz / tmp[y].p_align + ((tmp[y].p_memsz % tmp[y].p_align != 0) ? 1 : 0)) * tmp[y].p_align);
-	lseg->hdata->p_offset = tmp[y].p_offset + ((tmp[y].p_filesz / tmp[y].p_align + ((tmp[y].p_filesz % tmp[y].p_align != 0) ? 1 : 0)) * tmp[y].p_align);
-	*/
-	len += sizeof(woody->key);
-	lseg->hdata->p_memsz += len; 
-	lseg->hdata->p_filesz += len; 
+	lseg->hdata->p_memsz += inject_size; 
+	lseg->hdata->p_filesz += inject_size; 
 }
 
-int			add_to_end_segment(t_woody *woody, t_segments *lseg, char *content, size_t content_len)
+int			add_to_end_segment(t_woody *woody, t_segments *lseg)
 {
 	int		i_jmp;
 	char	*code;
 	size_t	jmpaddr;
 	char	*tmp;
 
-	if ((i_jmp = jmpchr(content, content_len)) < 0)
-		return (1);
-	jmpaddr = woody->elf_hdr->e_entry - ((lseg->hdata->p_vaddr + lseg->code_len) + (i_jmp + 5));
-	ft_memcpy(content + i_jmp + 1, &jmpaddr, sizeof(jmpaddr));
-	//jmpaddr = reverse_bytes(jmpaddr);
-
 	code = malloc(woody->len);
-	ft_memcpy(code, woody->bindest, woody->len);
-	ft_memcpy(code + lseg->hdata->p_offset + lseg->code_len, content, content_len);
-	ft_memcpy(code + lseg->hdata->p_offset + lseg->code_len + content_len, &(woody->key), sizeof(woody->key));
+	tmp = code;
+	ft_memcpy(tmp, woody->bindest, woody->len);
+	tmp += lseg->hdata->p_offset + lseg->code_len;
+	ft_memcpy(tmp, inject_func, inject_size);
+
+	if ((i_jmp = jmpchr(tmp, inject_size)) < 0)
+	{
+		ft_dprintf(2, "woody-woodpacker : jmp not find\n");
+		return (1);
+	}
+	jmpaddr = woody->elf_hdr->e_entry - ((lseg->hdata->p_vaddr + lseg->code_len) + (i_jmp + 5));
+	ft_memcpy(tmp + i_jmp + 1, &jmpaddr, sizeof(jmpaddr));
+
+	ft_printf("%d %d\n", inject_size, code_size);
+	ft_printf("code deb %x\n", lseg->code_deb);
+	ft_printf("code size %d\n", lseg->code_len);
+
+	tmp += code_size;
+	ft_memcpy(tmp, &(woody->key), sizeof(woody->key));
+	tmp += sizeof(woody->key);
+	ft_memcpy(tmp , &(lseg->code_deb), sizeof(lseg->code_deb));
+	tmp += sizeof(lseg->code_deb);
+	ft_memcpy(tmp, &(lseg->code_len), sizeof(lseg->code_len));
 
 	tmp = woody->bindest;
 	woody->bindest = code;

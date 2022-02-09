@@ -1,6 +1,9 @@
 CC		=	gcc
 CFLAGS	+=	-Wall -Wextra #-Werror
 
+NASM	=	nasm
+NFLAGS	+=	-f elf64
+
 ifdef DEBUG
 	CFLAGS += -g3 -fsanitize=address
 endif
@@ -22,11 +25,15 @@ FILES	=	main.c		\
 			segment.c	\
 			encrypt.c	\
 			utils.c		\
-			woody.c
+			woody.c		\
+
+SFILES	=	srcs/payload.asm
+SOFILES	=	srcs/payload.o
 
 SRCS	=	$(addprefix $(SRCDIR)/, $(FILES))
 OBJS	=	$(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 OBJSD	=	$(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.d)
+
 
 ##### Colors #####
 _END=\x1b[0m
@@ -52,7 +59,8 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	@$(MAKE) -q -C $(LIBFT) || $(MAKE) -j4 -C $(LIBFT)
 	@echo -e -n "\n${_BLUE}${_BOLD}[Create Executable] $(NAME)${_END}"
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -L./$(LIBFT) -lft
+	@$(NASM) $(NFLAGS) -o $(SOFILES) $(SFILES)  
+	@$(CC) $(CFLAGS) -o $(NAME) $(SOFILES) $(OBJS) -L./$(LIBFT) -lft
 	@echo -e "\n${_GREEN}${_BOLD}$(NAME) done.${_END}"
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c Makefile
