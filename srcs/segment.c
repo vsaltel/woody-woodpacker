@@ -24,7 +24,12 @@ int			check_data_available(t_woody *woody, t_segments *seg)
 	i = 0;
 	while (data[i] == 0)
 		i++;
-	ft_printf("available : %d\n", i);
+	ft_printf("space %d\n", i);
+	if (i < inject_size)
+	{
+		ft_dprintf(2, "woody-woodpacker: Not enough space in .text\n");
+		return (1);
+	}
 	return (0);
 }
 
@@ -47,13 +52,13 @@ int			init_segments(t_segments *seg, Elf64_Ehdr *elf_hdr, char *binary)
 	seg->hdata_index = get_index_hdata(elf_hdr, binary);
 	seg->hdata = seg->begin + seg->hdata_index;
 	seg->code_len = seg->hdata->p_filesz;
-	//seg->code_deb = elf_hdr->e_entry;
+	seg->code_off = seg->hdata->p_offset;
 	seg->code_deb = seg->hdata->p_vaddr;
 	seg->seg_len = elf_hdr->e_phnum;
 	return (0);
 }
 
-void		edit_segment_size_loop(t_woody *woody, t_segments *lseg)
+void		edit_segment_size(t_woody *woody, t_segments *lseg)
 {
 	(void)woody;
 
@@ -67,6 +72,7 @@ int			add_to_end_segment(t_woody *woody, t_segments *lseg)
 	char	*code;
 	size_t	jmpaddr;
 	char	*tmp;
+	uint64_t	reladdr;
 
 	code = malloc(woody->len);
 	tmp = code;
@@ -74,7 +80,7 @@ int			add_to_end_segment(t_woody *woody, t_segments *lseg)
 	tmp += lseg->hdata->p_offset + lseg->code_len;
 	ft_memcpy(tmp, inject_func, inject_size);
 
-	if ((i_jmp = jmpchr(tmp, inject_size)) < 0)
+	if ((i_jmp = opcodechr(tmp, inject_size, '\xe9')) < 0)
 	{
 		ft_dprintf(2, "woody-woodpacker : jmp not find\n");
 		return (1);
@@ -82,22 +88,21 @@ int			add_to_end_segment(t_woody *woody, t_segments *lseg)
 	jmpaddr = woody->elf_hdr->e_entry - ((lseg->hdata->p_vaddr + lseg->code_len) + (i_jmp + 5));
 	ft_memcpy(tmp + i_jmp + 1, &jmpaddr, sizeof(jmpaddr));
 
-	ft_printf("%d %d\n", inject_size, code_size);
-	ft_printf("code deb %x\n", lseg->code_deb);
-	ft_printf("code size %d\n", lseg->code_len);
-
 	tmp += code_size;
 	ft_memcpy(tmp, &(woody->key), sizeof(woody->key));
 	tmp += sizeof(woody->key);
-	ft_memcpy(tmp , &(lseg->code_deb), sizeof(lseg->code_deb));
-	tmp += sizeof(lseg->code_deb);
+
+	reladdr = lseg->code_len + code_size;
+	ft_memcpy(tmp , &(reladdr), sizeof(reladdr));
+	tmp += sizeof(reladdr);
+	//ft_memcpy(tmp , &(lseg->code_deb), sizeof(lseg->code_deb));
+	//tmp += sizeof(lseg->code_deb);
 	ft_memcpy(tmp, &(lseg->code_len), sizeof(lseg->code_len));
 
 	tmp = woody->bindest;
 	woody->bindest = code;
 	woody->elf_hdr = (Elf64_Ehdr *)woody->bindest;
 	woody->elf_hdr->e_entry = lseg->hdata->p_vaddr + lseg->code_len;	//entry point
-	ft_printf("entry : '%x'\n", woody->elf_hdr->e_entry);
 	free(tmp);
 	return (0);
 }

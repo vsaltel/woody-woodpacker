@@ -6,6 +6,7 @@
 #include <sys/syscall.h>
 #include <fcntl.h>
 #include <elf.h>
+#include <stdio.h>
 
 # include "libft.h"
 
@@ -31,6 +32,7 @@ typedef struct s_segments
 	Elf64_Phdr	*begin;
 	Elf64_Phdr	*hdata;
 	int			hdata_index;
+	uint64_t	code_off;
 	uint64_t	code_len;
 	uint64_t	code_deb;
 	size_t		seg_len;
@@ -52,8 +54,9 @@ int			free_ret(t_woody *woody, int ret);
 void		init_woody(t_woody *woody);
 size_t		memlen(char *deb, char *dest);
 int			ft_woody(t_woody *woody);
-int			jmpchr(char *str, size_t len);
+int			opcodechr(char *str, size_t len, char opcode);
 Elf64_Addr	reverse_bytes(Elf64_Addr bytes);
+void		display_injection(void);
 
 int			check_elf(Elf64_Ehdr *elf_hdr, char *arg);
 void		display_elf_info(Elf64_Ehdr *elf_hdr);
@@ -68,7 +71,7 @@ int			check_data_available(t_woody *woody, t_segments *seg);
 int			get_index_hdata(Elf64_Ehdr *elf_hdr, char *binary);
 int			init_segments(t_segments *seg, Elf64_Ehdr *elf_hdr, char *binary);
 int			add_to_end_segment(t_woody *woody, t_segments *lseg);
-void		edit_segment_size_loop(t_woody *woody, t_segments *lseg);
+void		edit_segment_size(t_woody *woody, t_segments *lseg);
 
 
 void		encrypt(t_woody *woody, t_segments *seg);

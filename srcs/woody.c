@@ -22,19 +22,30 @@ static int	remove_protection(Elf64_Ehdr *elf_hdr, Elf64_Phdr *hdata, char *binar
 	return (0);
 }
 
+static void	print_info(t_woody *woody, t_segments *lseg)
+{
+	ft_printf("key : '%lx'\n", woody->key);
+	ft_printf("inject size %d\n", inject_size);
+	ft_printf("code deb %x\n", lseg->code_deb);
+	ft_printf("code size %d\n", lseg->code_len);
+	ft_printf("entry : '%x'\n", woody->elf_hdr->e_entry);
+	display_injection();
+}
+
 static int	set_binary(t_woody *woody)
 {
 	t_segments	lseg;
 
 	init_segments(&lseg, woody->elf_hdr, woody->bindest);
-	check_data_available(woody, &lseg);
-	//display_segment_info(woody->elf_hdr, woody->bindest);
+	if (check_data_available(woody, &lseg))
+		return (1);
+	display_segment_info(woody->elf_hdr, woody->bindest);
 	remove_protection(woody->elf_hdr, lseg.hdata, woody->bindest);
 	woody->key = keygen();
-	ft_printf("key : '%lx'\n", woody->key);
-	edit_segment_size_loop(woody, &lseg);
+	edit_segment_size(woody, &lseg);
 	add_to_end_segment(woody, &lseg);
 	encrypt(woody, &lseg);
+	print_info(woody, &lseg);
 	//display_segment_info(woody->elf_hdr, woody->bindest);
 	return (0);
 }

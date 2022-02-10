@@ -10,7 +10,8 @@ uint64_t		keygen(void)
 
 static uint64_t	rotate_key(uint64_t key)
 {
-	return ((key << 8) & (key >> 56));
+	//return ((key << 8) & (key >> 56));
+	return (key * 3);
 }
 
 void			encrypt(t_woody *woody, t_segments *seg)
@@ -20,8 +21,8 @@ void			encrypt(t_woody *woody, t_segments *seg)
 	size_t		end;
 
 	key_tmp = woody->key;
-	deb = seg->hdata->p_offset;
-	end = seg->hdata->p_offset + seg->code_len;
+	deb = seg->code_off;
+	end = seg->code_off + seg->code_len;
 	while (deb < end)
 	{
 		woody->bindest[deb] ^= (char)key_tmp;

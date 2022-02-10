@@ -51,16 +51,30 @@ Elf64_Addr reverse_bytes(Elf64_Addr bytes)
     return (aux);
 }
 
-int	jmpchr(char *str, size_t len)
+int	opcodechr(char *str, size_t len, char opcode)
 {
 	size_t	i;
 
 	i = 0;
 	while (i < len)
 	{
-		if (str[i] == '\xe9')
+		if (str[i] == opcode)
 			return ((int)i);
 		i++;
 	}
 	return (-1);
+}
+
+void	display_injection(void)
+{
+	char	*c;
+	size_t	i;
+
+	i = 0;
+	c = (char *)inject_func;
+	while (i < inject_size)
+	{
+		printf("\\x%02hhx", c[i]);
+		i++;
+	}
 }

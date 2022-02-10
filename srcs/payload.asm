@@ -25,12 +25,14 @@ inject_func:
 	push r14
 	push r15
 
-	mov		rax, [rel addr]
+	lea		rax, [rel key]
+	sub		rax, [rel addr]
 	mov		rcx, [rel size]
 	mov		rdx, [rel key]
 	add		rcx, rax
 	.loop	xor		byte[rax], dl
-		ror		rdx, 8
+		;ror		rdx, 8
+		imul 	rdx, 3
 		inc		rax
 		cmp		rax, rcx
 		jnz		.loop
@@ -72,8 +74,6 @@ inject_func:
 	pop rbx 
 	pop rax 
 
-;	mov		rax, [rel addr]
-;	jmp		rax
 	jmp	0x11111111
 
 variables:
