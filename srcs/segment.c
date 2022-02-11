@@ -10,7 +10,7 @@ void		display_segment_info(Elf64_Ehdr *elf_hdr, char *binary)
 	while (++i < elf_hdr->e_phnum)
 	{
 		ft_printf("%d\tp_memsz %ld, p_filesz %ld, p_align %ld\n", i, segment[i].p_memsz, segment[i].p_filesz, segment[i].p_align);
-		ft_printf("\tp_vaddr %lx, p_offset %ld\n", segment[i].p_vaddr, segment[i].p_offset);
+		ft_printf("\tp_vaddr %#lx, p_offset %#lx\n", segment[i].p_vaddr, segment[i].p_offset);
 		ft_printf("\tp_flags %c%c%c, p_type %d\n", (segment[i].p_flags & PF_R ? 'R' : ' '), (segment[i].p_flags & PF_W ? 'W' : ' '), (segment[i].p_flags & PF_X ? 'X' : ' '), segment[i].p_type);
 	}
 }
@@ -24,12 +24,13 @@ int			check_data_available(t_woody *woody, t_segments *seg)
 	i = 0;
 	while (data[i] == 0)
 		i++;
-	ft_printf("space %d\n", i);
 	if (i < inject_size)
 	{
 		ft_dprintf(2, "woody-woodpacker: Not enough space in .text\n");
+		ft_dprintf(2, "%d < %d\n", i, inject_size);
 		return (1);
 	}
+	seg->free_space = i;
 	return (0);
 }
 
@@ -95,8 +96,6 @@ int			add_to_end_segment(t_woody *woody, t_segments *lseg)
 	reladdr = lseg->code_len + code_size;
 	ft_memcpy(tmp , &(reladdr), sizeof(reladdr));
 	tmp += sizeof(reladdr);
-	//ft_memcpy(tmp , &(lseg->code_deb), sizeof(lseg->code_deb));
-	//tmp += sizeof(lseg->code_deb);
 	ft_memcpy(tmp, &(lseg->code_len), sizeof(lseg->code_len));
 
 	tmp = woody->bindest;

@@ -8,12 +8,6 @@ uint64_t		keygen(void)
 			(((uint64_t) rand() << 48) & 0xFFFF000000000000ull));
 }
 
-static uint64_t	rotate_key(uint64_t key)
-{
-	//return ((key << 8) & (key >> 56));
-	return (key * 3);
-}
-
 void			encrypt(t_woody *woody, t_segments *seg)
 {
 	uint64_t	key_tmp;
@@ -26,7 +20,7 @@ void			encrypt(t_woody *woody, t_segments *seg)
 	while (deb < end)
 	{
 		woody->bindest[deb] ^= (char)key_tmp;
-		key_tmp = rotate_key(key_tmp);
+		key_tmp *= 3;
 		deb++;
 	}
 }

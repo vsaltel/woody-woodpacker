@@ -27,32 +27,34 @@ static void	display_system(Elf64_Ehdr *elf_hdr)
 
 void	display_elf_info(Elf64_Ehdr *elf_hdr)
 {
-	ft_dprintf(2, "Elf version %u\n", (unsigned char)elf_hdr->e_ident[EI_VERSION]);
 	display_system(elf_hdr);
-	ft_dprintf(2, "e_ident size : %u\n", EI_NIDENT);
-	ft_dprintf(2, "ELF size : %u\n", elf_hdr->e_ehsize);
+	ft_dprintf(2, "ELF version %u\n", (unsigned char)elf_hdr->e_ident[EI_VERSION]);
+	ft_dprintf(2, "ELF header size : %u\n", elf_hdr->e_ehsize);
+	ft_dprintf(2, "Old entry point : %#lx\n", elf_hdr->e_entry);
+	ft_dprintf(2, "Segment header size : %d\n", elf_hdr->e_phentsize);
+	ft_dprintf(2, "Segment total : %d\n", elf_hdr->e_phnum);
 }
 
 int		check_elf(Elf64_Ehdr *elf_hdr, char *arg)
 {
 	if (ft_strncmp((const char *)elf_hdr->e_ident + EI_MAG0, "\x7f\x45\x4c\x46", 4))
 	{
-		ft_dprintf(2, "woody_woodpacker : %s : Not a elf file\n", arg);
+		ft_dprintf(2, "woody_woodpacker: %s : Not a elf file\n", arg);
 		return (1);
 	}
 	if ((unsigned char)elf_hdr->e_ident[EI_CLASS] > 7)
 	{
-		ft_dprintf(2, "woody_woodpacker : %s : The file was not recognized as a valid object file\n", arg);
+		ft_dprintf(2, "woody_woodpacker: %s : The file was not recognized as a valid object file\n", arg);
 		return (1);
 	}
 	if ((unsigned char)elf_hdr->e_ident[EI_CLASS] != ELFCLASS64)
 	{
-		ft_dprintf(2, "woody_woodpacker : %s : Not a 64 bits file\n", arg);
+		ft_dprintf(2, "woody_woodpacker: %s : Not a 64 bits file\n", arg);
 		return (1);
 	}
 	if (elf_hdr->e_type != ET_DYN && elf_hdr->e_type != ET_EXEC)
 	{
-		ft_dprintf(2, "woody_woodpacker : %s : Not an executable file\n", arg);
+		ft_dprintf(2, "woody_woodpacker: %s : Not an executable file\n", arg);
 		return (1);
 	}
 	return (0);

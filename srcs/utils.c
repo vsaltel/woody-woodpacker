@@ -15,9 +15,16 @@ int	free_ret(t_woody *woody, int ret)
 void	init_woody(t_woody *woody)
 {
 	woody->filename = NULL;
-	woody->elf_hdr = NULL;
+	woody->binary = NULL;
+	woody->bindest = NULL;
+	woody->v = 0;
+	woody->c = 0;
+	woody->s = 0;
 	woody->fd = -1;
 	woody->fd_dest = -1;
+	woody->elf_hdr = NULL;
+	woody->len = 0;
+	woody->key = 0;
 }
 
 size_t	memlen(char *deb, char *dest)
@@ -65,16 +72,18 @@ int	opcodechr(char *str, size_t len, char opcode)
 	return (-1);
 }
 
-void	display_injection(void)
+void	display_injection(t_woody *woody, t_segments *seg)
 {
 	char	*c;
 	size_t	i;
 
 	i = 0;
-	c = (char *)inject_func;
+	c = woody->bindest + seg->code_off + seg->code_len;
+	ft_printf("Injection code :\n");
 	while (i < inject_size)
 	{
-		printf("\\x%02hhx", c[i]);
+		ft_printf("\\x%02hhx", c[i]);
 		i++;
 	}
+	write(1, "\n", 1);
 }

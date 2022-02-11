@@ -17,14 +17,17 @@ extern size_t	code_size;
 typedef struct s_woody
 {
 	char		*filename;
-	int			fd;
-	struct stat	stat;
-	size_t		len;
 	char		*binary;
 	char		*bindest;
+	int			v;
+	int			c;
+	int			s;
+	int			fd;
 	int			fd_dest;
-	uint64_t	key;
+	struct stat	stat;
 	Elf64_Ehdr	*elf_hdr;
+	size_t		len;
+	uint64_t	key;
 }				t_woody;
 
 typedef struct s_segments
@@ -32,6 +35,7 @@ typedef struct s_segments
 	Elf64_Phdr	*begin;
 	Elf64_Phdr	*hdata;
 	int			hdata_index;
+	size_t		free_space;
 	uint64_t	code_off;
 	uint64_t	code_len;
 	uint64_t	code_deb;
@@ -56,7 +60,7 @@ size_t		memlen(char *deb, char *dest);
 int			ft_woody(t_woody *woody);
 int			opcodechr(char *str, size_t len, char opcode);
 Elf64_Addr	reverse_bytes(Elf64_Addr bytes);
-void		display_injection(void);
+void		display_injection(t_woody *woody, t_segments *seg);
 
 int			check_elf(Elf64_Ehdr *elf_hdr, char *arg);
 void		display_elf_info(Elf64_Ehdr *elf_hdr);
