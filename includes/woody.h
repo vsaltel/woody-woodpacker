@@ -6,6 +6,7 @@
 #include <sys/syscall.h>
 #include <fcntl.h>
 #include <elf.h>
+#include <time.h>
 #include <stdio.h>
 
 # include "libft.h"
@@ -49,36 +50,40 @@ typedef struct s_section
 }				t_section;
 
 
+/*	file.c */
 int			stat_file(t_woody *woody);
 int			open_file(char *arg);
 int			write_file(int fd, char *content, size_t len);
 int			create_file(char *name);
 
+/*	utils.c */
 int			free_ret(t_woody *woody, int ret);
 void		init_woody(t_woody *woody);
 size_t		memlen(char *deb, char *dest);
 int			ft_woody(t_woody *woody);
 int			opcodechr(char *str, size_t len, char opcode);
-Elf64_Addr	reverse_bytes(Elf64_Addr bytes);
 void		display_injection(t_woody *woody, t_segments *seg);
+uint64_t	read_hex(char *in);
 
+/*	elf.c */
 int			check_elf(Elf64_Ehdr *elf_hdr, char *arg);
 void		display_elf_info(Elf64_Ehdr *elf_hdr);
 
-Elf64_Shdr	*get_section_by_name(Elf64_Ehdr *elf_hdr, char *binary, char *name);
-t_section	*get_data_section(t_section *dest, Elf64_Shdr *sh, char *binary);
-int			set_section(Elf64_Ehdr *elf_hdr, char *binary);
-void		update_section_pos(t_woody *woody, t_segments *lseg, size_t offset);
-
+/*	segment_utils.c */
 void		display_segment_info(Elf64_Ehdr *elf_hdr, char *binary);
 int			check_data_available(t_woody *woody, t_segments *seg);
-int			get_index_hdata(Elf64_Ehdr *elf_hdr, char *binary);
-int			init_segments(t_segments *seg, Elf64_Ehdr *elf_hdr, char *binary);
+int			get_index_hdata(t_woody *woody, Elf64_Ehdr *elf_hdr, char *binary);
+int			init_segments(t_woody *woody, t_segments *seg, Elf64_Ehdr *elf_hdr, char *binary);
+
+/*	segment.c */
 int			add_to_end_segment(t_woody *woody, t_segments *lseg);
-void		edit_segment_size(t_woody *woody, t_segments *lseg);
+void		edit_segment_size(t_segments *lseg);
 
-
+/*	encrypt.c */
 void		encrypt(t_woody *woody, t_segments *seg);
 uint64_t	keygen(void);
+
+/*	check_file.c */
+int			check_file(t_woody *woody);
 
 #endif

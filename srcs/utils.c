@@ -40,24 +40,6 @@ size_t	memlen(char *deb, char *dest)
 	return (i);
 }
 
-Elf64_Addr reverse_bytes(Elf64_Addr bytes)
-{
-	int	len;
-    Elf64_Addr aux = 0;
-    uint8_t byte;
-    int i;
-
-	len = sizeof(Elf64_Addr);
-	i = 0;
-    while(i < len)
-    {
-        byte = (bytes >> i) & 0xff;
-        aux |= byte << (32 - 8 - i);
-		i += 8;
-    }
-    return (aux);
-}
-
 int	opcodechr(char *str, size_t len, char opcode)
 {
 	size_t	i;
@@ -74,16 +56,46 @@ int	opcodechr(char *str, size_t len, char opcode)
 
 void	display_injection(t_woody *woody, t_segments *seg)
 {
-	char	*c;
-	size_t	i;
+	uint32_t	*c;
+	size_t		i;
 
 	i = 0;
-	c = woody->bindest + seg->code_off + seg->code_len;
+	c = (uint32_t *)(woody->bindest + seg->code_off + seg->code_len);
 	ft_printf("Injection code :\n");
-	while (i < inject_size)
+	while (i < inject_size / 4)
 	{
-		ft_printf("\\x%02hhx", c[i]);
+		ft_printf("0x%08x\t", c[i]);
+		i++;
+		if (i != 0 && i % 4 == 0)
+			write(1, "\n", 1);
+	}
+	ft_printf("\n");
+}
+
+uint64_t	read_hex(char *in)
+{
+	uint64_t	ret;
+	int			i;
+
+	if (!in)
+		return (0);
+	i = 0;
+	ret = 0;
+	while (i < 16 && in[i])
+	{
+		if (in[i] >= '0' && in[i] <= '9')
+		{
+			ret = ret << 4;
+			ret += in[i] - '0';
+		}
+		else if (in[i] >= 'a' && in[i] <= 'f')
+		{
+			ret = ret << 4;
+			ret += (in[i] - 'a' + 10);
+		}
+		else
+			return (0);
 		i++;
 	}
-	write(1, "\n", 1);
+	return (ret);
 }

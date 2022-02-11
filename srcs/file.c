@@ -10,7 +10,7 @@ int	stat_file(t_woody *woody)
 	if (S_ISDIR(woody->stat.st_mode))
 	{
 		ft_dprintf(2, "woody_woodpacker : %s: is Directory\n", woody->filename);
-		return (2);
+		return (3);
 	}
 	woody->len = woody->stat.st_size;
 	return (0);

@@ -1,5 +1,13 @@
 #include "woody.h"
 
+int		usage(char *prog)
+{
+	ft_dprintf(2, "Usage: %s [OPTIONS]... [FILE]\n\t-v \t\tVerbose mode\n\t-s \
+		Display sections informations\n\t-c \
+		Display injected opcode\n\t-k hexnum \tSet encryption key\n", prog);
+	return (1);
+}
+
 void	parse_param(t_woody *woody, int argc, char **argv)
 {
 	int	i;
@@ -13,11 +21,14 @@ void	parse_param(t_woody *woody, int argc, char **argv)
 			woody->c = 1;
 		else if (!ft_strcmp(argv[i], "-s")) 	
 			woody->s = 1;
-		else
+		else if (!ft_strcmp(argv[i], "-k")) 	
+		{
+			if (argv[++i])
+				woody->key = read_hex(argv[i]);
+		}
+		else if (!woody->filename)
 			woody->filename = ft_strdup(argv[i]);
 	}
-	if (!woody->filename)
-		woody->filename = ft_strdup("a.out");
 }
 
 int	main(int argc, char **argv)
@@ -27,21 +38,22 @@ int	main(int argc, char **argv)
 
 	init_woody(&woody);
 	parse_param(&woody, argc, argv);
+	if (!woody.filename)
+		return (usage(argv[0]));
 	woody.fd = open_file(woody.filename);	
 	if (woody.fd < 0)
-		return (free_ret(&woody, 1));
-	ret = stat_file(&woody);
-	if (ret)
+		return (free_ret(&woody, 2));
+	if ((ret = stat_file(&woody)))
 		return (free_ret(&woody, ret));
 	woody.binary = mmap(NULL, woody.stat.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, woody.fd, 0);
 	woody.elf_hdr = (Elf64_Ehdr *)woody.binary;
 	if (woody.elf_hdr == MAP_FAILED)
 	{
 		ft_dprintf(2, "woody_woodpacker: mmap fail\n");
-		return (free_ret(&woody, 3));
+		return (free_ret(&woody, 4));
 	}
-	ret = 4;
-	if (!check_elf(woody.elf_hdr, woody.filename))	
-		ret = ft_woody(&woody);
+	if ((ret = check_file(&woody)))
+		return (free_ret(&woody, ret));
+	ret = ft_woody(&woody);
 	return (free_ret(&woody, ret));
 }

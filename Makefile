@@ -1,5 +1,5 @@
 CC		=	gcc
-CFLAGS	+=	-Wall -Wextra #-Werror
+CFLAGS	+=	-Wall -Wextra -Werror
 
 NASM	=	nasm
 NFLAGS	+=	-f elf64
@@ -18,17 +18,18 @@ SRCDIR	=	srcs
 INCDIR	=	includes
 OBJDIR	=	objs
 
-FILES	=	main.c		\
-			elf.c		\
-			file.c		\
-			section.c	\
-			segment.c	\
-			encrypt.c	\
-			utils.c		\
-			woody.c		\
+FILES	=	main.c			\
+			elf.c			\
+			file.c			\
+			segment.c		\
+			segment_utils.c	\
+			check_file.c	\
+			encrypt.c		\
+			utils.c			\
+			woody.c
 
-SFILES	=	srcs/payload.asm
-SOFILES	=	srcs/payload.o
+SFILES	=	$(SRCDIR)/payload.asm
+SOFILES	=	$(OBJDIR)/payload.o
 
 SRCS	=	$(addprefix $(SRCDIR)/, $(FILES))
 OBJS	=	$(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
